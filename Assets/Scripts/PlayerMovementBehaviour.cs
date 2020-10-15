@@ -13,6 +13,7 @@ public class PlayerMovementBehaviour : MonoBehaviour
     public float pushPower = 2.0f;
     public float jumpForce = 10.0f;
     public float gravity = 10.0f;
+    public float ascentMaxSpeed = 40.0f;
     private Vector3 _verticalVelocity = Vector3.zero;
     [SerializeField]
     private bool _isGrounded;
@@ -46,17 +47,21 @@ public class PlayerMovementBehaviour : MonoBehaviour
         //Vector3 velocity = transform.forward * vertical * speed;
         Vector3 velocity = new Vector3(-vertical, 0, horizontal);
         _isGrounded = _controller.SimpleMove(velocity *speed);
-        if(Input.GetButtonDown("Jump") && _isGrounded)
+        if(Input.GetButton("Jump"))
         {
-            _verticalVelocity.y = jumpForce;
+            _verticalVelocity.y += jumpForce* Time.deltaTime;
             _animator.SetBool("Jump", true);
         }
         else
         {
             _animator.SetBool("Jump", false);
         }
-        
+        if (_verticalVelocity.magnitude > ascentMaxSpeed)
+        {
+            _verticalVelocity = _verticalVelocity.normalized * ascentMaxSpeed;
+        }
         _verticalVelocity.y -= gravity * Time.deltaTime;
+        
         _controller.Move(_verticalVelocity * Time.deltaTime);
         if (velocity.magnitude > 0)
             transform.forward = velocity.normalized;

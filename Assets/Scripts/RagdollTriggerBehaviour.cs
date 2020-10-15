@@ -27,6 +27,20 @@ public class RagdollTriggerBehaviour : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        RagdollBehaviour ragdoll = collision.gameObject.GetComponentInParent<RagdollBehaviour>();
+        if (ragdoll)
+        {
+            ragdoll.ragdollOn = true;
+        }
+        Collider[] collisions = Physics.OverlapSphere(transform.position, 20);
+        foreach (Collider collider in collisions)
+        {
+            collider.GetComponent<Rigidbody>().AddExplosionForce(explosiveForce, transform.position, explosionRadius);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
